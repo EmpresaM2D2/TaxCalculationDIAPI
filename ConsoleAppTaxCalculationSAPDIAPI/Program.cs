@@ -21,6 +21,7 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
             {
                 Console.WriteLine("Connection failed");
                 Console.WriteLine(company.GetLastErrorDescription());
+                Console.ReadKey();
                 return;
             }
 
