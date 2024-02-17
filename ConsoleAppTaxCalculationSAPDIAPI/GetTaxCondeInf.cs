@@ -14,10 +14,17 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
         }
         [DataMember]
         public List<TaxCodeInf> TaxInformations { get; set; } = new List<TaxCodeInf>();
+        [DataMember]
+        public List<WithholdTax> WithholdingTax { get; set; } = new List<WithholdTax>();
         public void AddTaxInformation(TaxCodeInf taxCodeInf)
         {
             this.TaxInformations.Add(taxCodeInf);
         }
+
+        public void AddWithholdingTax(WithholdTax withholdTax)
+        {
+            this.WithholdingTax.Add(withholdTax);
+        }   
     }
 
     [DataContract]
@@ -123,4 +130,76 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
 
         }
     }
+
+
+
+
+    [DataContract]
+    public class WithholdTax
+    {
+        public  WithholdTax(Recordset recordset)
+        {
+            this.AbsEntry = Convert.ToInt32(recordset.Fields.Item("AbsEntry").Value.ToString());
+            this.WTCode = recordset.Fields.Item("WTCode").Value.ToString();
+            this.Rate = Convert.ToDecimal(recordset.Fields.Item("Rate").Value.ToString());
+            this.TaxbleAmnt = Convert.ToDecimal(recordset.Fields.Item("TaxbleAmnt").Value.ToString());
+            this.TxblAmntSC = Convert.ToDecimal(recordset.Fields.Item("TxblAmntSC").Value.ToString());
+            this.TxblAmntFC = Convert.ToDecimal(recordset.Fields.Item("TxblAmntFC").Value.ToString());
+            this.WTAmnt = Convert.ToDecimal(recordset.Fields.Item("WTAmnt").Value.ToString());
+            this.Account = recordset.Fields.Item("Account").Value.ToString();
+            
+
+        }
+        [DataMember]
+        public int AbsEntry { get; set; }
+
+        [DataMember]
+        public string WTCode { get; set; }
+
+        [DataMember]
+        public decimal? Rate { get; set; }
+
+        [DataMember]
+        public decimal? TaxbleAmnt { get; set; }
+
+        [DataMember]
+        public decimal? TxblAmntSC { get; set; }
+
+        [DataMember]
+        public decimal? TxblAmntFC { get; set; }
+
+        [DataMember]
+        public decimal? WTAmnt { get; set; }
+
+        [DataMember]
+        public decimal? WTAmntSC { get; set; }
+
+        [DataMember]
+        public decimal? WTAmntFC { get; set; }
+
+        [DataMember]
+        public decimal? ApplAmnt { get; set; }
+
+        [DataMember]
+        public decimal? ApplAmntSC { get; set; }
+
+        [DataMember]
+        public decimal? ApplAmntFC { get; set; }
+
+        [DataMember]
+        public string Category { get; set; }
+
+        [DataMember]
+        public string Criteria { get; set; }
+
+        [DataMember]
+        public string Account { get; set; }
+
+       
+        
+       
+
+
+    }
+
 }

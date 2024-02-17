@@ -21,6 +21,7 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
             {
                 Console.WriteLine("Connection failed");
                 Console.WriteLine(company.GetLastErrorDescription());
+                Console.WriteLine("Please change the connection parameters in CompanyHelper.cs file and try again");
                 Console.ReadKey();
                 return;
             }
@@ -32,7 +33,7 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
             try
             {
                 var sapDraft = company.GetBusinessObject(BoObjectTypes.oDrafts) as SAPbobsCOM.Documents;
-                sapDraft.DocObjectCode = BoObjectTypes.oOrders;
+                sapDraft.DocObjectCode = BoObjectTypes.oInvoices;
 
                 sapDraft.Comments = "The tax determination was defined by Usage field";
                 sapDraft.CardCode = "C00001";
@@ -139,7 +140,30 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
 
                     Console.WriteLine($"_____________________________________________________");
                     recordset.MoveNext();
+
+                  
                 }
+
+                Console.WriteLine($"_____________Withholding tax________________________________________");
+                var sqlWithholdingTax = GetSqlWithholdingTaxValues(docEntry);
+                var recordsetWithholdingTax = company.GetBusinessObject(BoObjectTypes.BoRecordset) as Recordset;
+                recordsetWithholdingTax.DoQuery(sqlWithholdingTax);
+                recordsetWithholdingTax.MoveFirst();
+                while (!recordsetWithholdingTax.EoF)
+                {
+                    taxResponse.WithholdingTax.Add(new WithholdTax(recordsetWithholdingTax));
+                    Console.WriteLine("Withholding tax details");
+                    Console.WriteLine($"AbsEntry: {recordsetWithholdingTax.Fields.Item("AbsEntry").Value}");
+                    Console.WriteLine($"WTCode: {recordsetWithholdingTax.Fields.Item("WTCode").Value}");
+                    Console.WriteLine($"Rate: {recordsetWithholdingTax.Fields.Item("Rate").Value}");
+                    Console.WriteLine($"TxblAmntSC: {recordsetWithholdingTax.Fields.Item("TxblAmntSC").Value}");
+                    Console.WriteLine($"TxblAmntFC: {recordsetWithholdingTax.Fields.Item("TxblAmntFC").Value}");
+                    Console.WriteLine($"WTAmnt: {recordsetWithholdingTax.Fields.Item("WTAmnt").Value}");
+                    Console.WriteLine($"Account: {recordsetWithholdingTax.Fields.Item("Account").Value}");
+                    Console.WriteLine("_____________________________________________________");
+                    recordsetWithholdingTax.MoveNext();
+                }
+
 
                 Console.WriteLine($"Expected result");
                 var json = taxResponse.ConvertObjectToJson();   
@@ -207,6 +231,13 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
             DRF1 ON DRF1.""LineNum"" = DRF4.""LineNum"" AND DRF1.""DocEntry"" = DRF4.""DocEntry"" 
 	            INNER JOIN 
             OSTC ON OSTC.""Code"" = DRF1.""TaxCode"" INNER JOIN OSTT ON OSTT.""AbsId"" = DRF4.""staType"" WHERE DRF4.""DocEntry"" = {docEntry}";
+
+        }
+
+        public static string GetSqlWithholdingTaxValues(int docEntry)
+        {
+            return $@"
+            select ""AbsEntry"", ""WTCode"", ""Rate"", ""TxblAmntSC"", ""TxblAmntFC"", ""TaxbleAmnt"", ""WTAmnt"", ""Account"" from DRF5 where ""AbsEntry""= {docEntry}";
 
         }
 

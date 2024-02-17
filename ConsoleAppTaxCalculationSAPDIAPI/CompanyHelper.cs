@@ -12,15 +12,15 @@ namespace ConsoleAppTaxCalculationSAPDIAPI
         public static Company GetCompany()
         {
             Company company = new Company();
-            company.Server = "NDB@hanab1:30013";
-            company.CompanyDB = "SBODEMOBR";
-            company.DbUserName = "SYSTEM";
+            company.Server = "youserver";
+            company.CompanyDB = "SBODemoBR";
+            company.DbUserName = "sa";
             company.DbPassword = "youpassword";
             company.UserName = "manager";
-            company.Password = "youpassword";
+            company.Password = "yourpassword";
             company.language = BoSuppLangs.ln_English;
             company.UseTrusted = false;
-            company.DbServerType = BoDataServerTypes.dst_HANADB;
+            company.DbServerType = BoDataServerTypes.dst_MSSQL2019;
             return company;
         }
     }
